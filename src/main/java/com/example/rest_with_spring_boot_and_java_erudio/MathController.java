@@ -1,5 +1,6 @@
 package com.example.rest_with_spring_boot_and_java_erudio;
 
+import com.example.rest_with_spring_boot_and_java_erudio.exceptions.UnsupportedMathOperationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -10,7 +11,7 @@ public class MathController {
             @PathVariable(value = "numberOne") String numberOne,
             @PathVariable(value = "numberTwo") String numberTwo) throws Exception {
         if (!isNumeric(numberOne) || !isNumeric(numberTwo)) {
-            throw new Exception();
+            throw new UnsupportedMathOperationException("Please set a numeric value");
         }
         return convertToDouble(numberOne) + convertToDouble(numberTwo);
     }
@@ -26,5 +27,45 @@ public class MathController {
         if (strNumber == null) return false;
         String number = strNumber.replaceAll(",", ".");
         return number.matches("[-+]?[0-9]*\\.?[0-9]+");
+    }
+
+    @RequestMapping(
+            value = "/division/{numberOne}/{numberTwo}",
+            method = RequestMethod.GET
+    )
+    public Double division(
+            @PathVariable(value = "numberOne") String numberOne,
+            @PathVariable(value = "numberTwo") String numberTwo) {
+
+        if (!isNumeric(numberOne) || !isNumeric(numberTwo)) {
+            throw new UnsupportedMathOperationException(
+                    "Please set a numeric value"
+            );
+        }
+
+        if (convertToDouble(numberTwo) == 0D) {
+            throw new UnsupportedMathOperationException(
+                    "Division by zero is not allowed"
+            );
+        }
+
+        return convertToDouble(numberOne) / convertToDouble(numberTwo);
+    }
+
+    @RequestMapping(
+            value = "/subtraction/{numberOne}/{numberTwo}",
+            method = RequestMethod.GET
+    )
+    public Double subtraction(
+            @PathVariable(value = "numberOne") String numberOne,
+            @PathVariable(value = "numberTwo") String numberTwo) throws Exception {
+
+        if (!isNumeric(numberOne) || !isNumeric(numberTwo)) {
+            throw new UnsupportedMathOperationException(
+                    "Please set a numeric value"
+            );
+        }
+
+        return convertToDouble(numberOne) - convertToDouble(numberTwo);
     }
 }
